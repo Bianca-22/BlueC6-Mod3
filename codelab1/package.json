@@ -1,0 +1,15 @@
+{
+  "name": "codelab1",
+  "version": "1.0.0",
+  "description": "Exercícios de revisão",
+  "main": "index-ex1.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "Bianca Corrêa",
+  "license": "ISC",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}
