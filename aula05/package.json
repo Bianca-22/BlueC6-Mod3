@@ -1,0 +1,19 @@
+{
+  "name": "aula05",
+  "version": "1.0.0",
+  "description": "aula 05",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "author": "Bianca Corrêa",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}
