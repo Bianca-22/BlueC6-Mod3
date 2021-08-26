@@ -40,8 +40,23 @@ app.post('/filmes', (req, res) => {
 
 // PUT - /filmes/{id} - Altera o filme pelo id
 app.put('/filme/:id', (req, res) =>{
-    const id = req.params.id -1;
-    const filme = req.body.filme;
+    const id = +req.params.id;
+
+    const filmeIndex = filmes.findIndex(filme => filme.id === id);
+
+    if (filmeIndex < 0) {
+        res.status(404).send({ error : "Filme não encontrado"});
+        return;
+    };
+
+    const novoFilme = req.body;
+
+    if (!novoFilme || !novoFilme.nome || !novoFilme.duracao) {
+        res.status(404).send({ error : "Filme não encontrado"});
+        return;
+    };
+    
+    const filme = filmes.
     filmes[id] = filme;
     res.send('Filme alterado com sucesso!')
 });
