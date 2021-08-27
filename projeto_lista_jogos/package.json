@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "prompt-sync": "^4.2.0"
+    "mongoose": "^6.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"

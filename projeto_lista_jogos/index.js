@@ -1,34 +1,16 @@
 const express = require("express");
+const jogoSchema = require("./models/Jogos")
 const app = express();
-
 app.use(express.json());
-
 const port = 3000;
-
-const jogos = [
-    {
-        id: 1,
-        nome: "League of Legends",
-        imageUrl: "https://blog.kabum.com.br/wp-content/uploads/2021/04/Riot-League-of-Legends.jpg"
-    },
-
-    {
-        id: 2,
-        nome: "Call of Duty: Warzone",
-        imageUrl: "https://www.gamerpoint.com.br/wp-content/uploads/2021/03/call-of-duty-warzone-atualizacao-tamanho-arquivo--1536x864.jpg"
-    }
-];
-
-const getJogosValidos = () => jogos.filter(Boolean);
-const getJogosById = id => getJogosValidos().find(jogo => jogo.id === id);
-const getJogosIndexById = id => getJogosValidos().findIndex(jogo => jogo.id === id);
 
 app.get('/', (req, res) => {
     res.send('Lista de Jogos')
 });
 
 app.get('/listaJogos', (req, res) => {
-    res.json({jogos})
+    const jogos = jogoSchema.find()
+    res.send(jogos)
 });
 
 app.get('/listaJogos/:id', (req, res) => {
