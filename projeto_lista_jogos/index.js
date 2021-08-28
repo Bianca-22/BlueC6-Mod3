@@ -1,85 +1,101 @@
 const express = require("express");
-const jogoSchema = require("./models/Jogos")
+const jogoSchema = require("./models/jogos");
+const mongoose = require("./database/index");
 const app = express();
 app.use(express.json());
 const port = 3000;
 
+
+
 app.get('/', (req, res) => {
-    res.send('Lista de Jogos')
+    res.send({ info: 'Lista de Jogos'})
 });
 
-app.get('/listaJogos', (req, res) => {
-    const jogos = jogoSchema.find()
-    res.send(jogos)
+app.get('/jogos', async (req, res) => {
+    const jogos = await jogoSchema.find();
+    res.send({jogos})
 });
 
-app.get('/listaJogos/:id', (req, res) => {
-    const id = +req.params.id;
-    const jogo = getJogosById(id)
+app.get('/jogos/:id', async (req, res) => {
+    const id = req.params.id;
 
-    !jogo
-      ? res.status(404).send({ error: "Jogo não existe" })
-      : res.json({ jogo });
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(422).send({error: 'Id inválido'})
+        return;
+    };
+
+    const jogo = await jogoSchema.findById(id);
+
+    if (!jogo){
+        res.status(404).send({error: 'Jogo não encontrado!'})
+        return;
+    };
+
+    res.send({jogo})
 });
 
-app.post("/listaJogos", (req, res) => {
+app.post('/jogos',async (req, res) => {
     const jogo = req.body;
-  
-    if (!jogo || !jogo.nome || !jogo.imageUrl) {
-      res.status(400).send({ error: "Jogo inválido!" });
-      return;
-    }
 
-    const ultimoJogo = jogos[jogos.length - 1];
-
-    if (jogos.length) {
-      jogo.id = ultimoJogo.id + 1;
-      jogos.push(jogo);
-    } else {
-      jogo.id = 1;
-      jogos.push(jogo);
-    }
-  
-    res.status(201).send({ jogo });
-});
-  
-app.put("/listaJogos/:id", (req, res) => {
-    const id = +req.params.id;
-    const jogoIndex = getJogoIndexById(id)
-
-    if (jogoIndex < 0) {
-        res.status(404).send({error: 'Filme não encontrado'})
+    if(!jogo || !jogo.nome || !jogo.imageUrl){
+        res.status(400).send({ error: "Insira todos os campos."});
         return;
-    }
+    };
 
-    const novoJogo = req.body;
+    const jogoNovo = await new jogoSchema(jogo).save();
 
-    if (!novoJogo || !novoJogo.nome || !jogo.imageUrl) {
-        res.status(400).send({ error: "Preencha todos os campos" });
-        return;
-    }
-
-    const jogo = getJogosById(id)
-    novoJogo.id = jogo.id
-    jogos[jogoIndex] = novoJogo
-
-    res.send({message: "Jogo alterado com sucesso!"});
+    res.status(201).send({jogoNovo})
 });
 
-app.delete("/listaJogos/:id", (req, res) => {
-    const id = +req.params.id;
-    const jogoIndex = getJogosIndexById(id);
+app.put('/jogos/:id', async (req, res) => {
+    const id = req.params.id;
 
-    if (jogoIndex < 0) {
-        res.status(404).send({error: 'Jogo não encontrado'});
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(422).send({error: 'Id inválido'})
         return;
-    }
+    };
 
-    jogos.splice(jogoIndex, 1)
-    res.send("Jogo apagado com sucesso!");
+    const jogo = await jogoSchema.findById(id);
+
+    if (!jogo){
+        res.status(404).send({error: 'Jogo não encontrado!'})
+        return;
+    };
+
+    const jogoNovo = req.body;
+
+    if(!jogoNovo || !jogoNovo.nome || !jogoNovo.imageUrl){
+        res.status(400).send({ error: "Insira todos os campos."});
+        return;
+    };
+
+    await jogoSchema.findOneAndUpdate({_id: id}, jogoNovo);
+    const jogoAtualizado = await jogoSchema.findById(id);
+
+    res.send({jogoAtualizado})
+});
+
+app.delete("/jogos/:id", async (req, res) => {
+    const id = req.params.id;
+  
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(422).send({ error: "Id inválido" });
+        return;
+    };
+  
+    const jogo = await jogoSchema.findById(id);
+  
+    if (!jogo) {
+        res.status(404).send({ error: "Jogo não encontrado!" });
+        return;
+    };
+  
+    await jogoSchema.findByIdAndDelete(id);
+    res.send({message: 'Filme excluído com sucesso!'})
 });
 
 
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
+
